@@ -1,6 +1,5 @@
 import java.nio.file.{FileSystems, Path}
 
-
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
@@ -9,12 +8,13 @@ import akka.stream.ActorMaterializer
 import akka.stream.alpakka.file.scaladsl.Directory
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import better.files.File
+import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.{ByteArraySerializer, StringSerializer}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-
+import configs.syntax._
 
 object ReactiveKafkaWriter extends App {
 
@@ -24,10 +24,12 @@ object ReactiveKafkaWriter extends App {
   implicit val materializer = ActorMaterializer()
   implicit val ec           = system.dispatcher
   val MAX_ALLOWED_FILES     = 1000
-  val inDir                 = File("/Users/sul.maatari/IdeaProjects/Worksheet/src/spike/scala/Casalini_mrc")
+  val config                = ConfigFactory.load()
+  val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
+  val inDir                 = File(s"${dir}/Casalini_mrc")
 
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
-    .withBootstrapServers("localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092")
+    .withBootstrapServers("localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092, 127.0.0.1:9092")
 
   val path                          = inDir.path.toString
   val fs                            = FileSystems.getDefault

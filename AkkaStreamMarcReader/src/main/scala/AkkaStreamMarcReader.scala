@@ -15,6 +15,8 @@ import org.marc4j.marc.Record
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 import akka.pattern.pipe
+import com.typesafe.config.ConfigFactory
+import configs.syntax._
 
 import scala.collection.immutable.Queue
 import scala.concurrent.duration._
@@ -24,18 +26,13 @@ import org.marc4j.MarcWriter
 
 
 object MarcReaderActor {
-
   case object ProcessRecords
   case object BackPressure
   case object ProcessFiles
-
   def props(file: File, sourceQueue: SourceQueueWithComplete[Record]): Props = Props(new MarcReaderActor(file, sourceQueue))
-
 }
 
 class MarcReaderActor(dir: File, sourceQueue: SourceQueueWithComplete[Record])  extends Actor {
-
-
 
   var reader     : MarcStreamReader = _
   var file       : File             = _
@@ -100,13 +97,10 @@ class MarcReaderActor(dir: File, sourceQueue: SourceQueueWithComplete[Record])  
 
     case Status.Failure(e) => {println("Big Failure, Shutting down"); self ! PoisonPill; sourceQueue.complete()/*context.system.terminate()*/}
 
-
     case BackPressure => {println("Resuming after a back pressure"); pipe(sourceQueue.offer(lastRecord)) to self}
   }
 
 }
-
-
 
 
 object AkkaStreamMarcReader extends App {
@@ -114,8 +108,10 @@ object AkkaStreamMarcReader extends App {
   implicit val system       = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
   implicit val ec           = system.dispatcher
-  val inDir                 = File("/Users/sul.maatari/IdeaProjects/Workshit/src/spike/scala/Casalini_mrc_full_1")
-  val outDir                = File("/Users/sul.maatari/IdeaProjects/Workshit/src/spike/scala/Casalini_mrc_1")
+  val config                = ConfigFactory.load()
+  val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
+  val inDir                 = File(s"${dir}/Casalini_mrc_full")
+  val outDir                = File(s"${dir}/Casalini_mrc")
   val RecordSource          = queue[Record](1000, akka.stream.OverflowStrategy.backpressure)
 
 

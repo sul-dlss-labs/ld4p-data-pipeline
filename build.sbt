@@ -1,16 +1,20 @@
 
+//name := "ld4p-data-pipeline"
 
 lazy val commonSettings = Seq(
   organization:= "edu.stanford.library",
   version := "1.0.0-SNAPSHOT",
-  scalaVersion := "2.11.11"
-
-
+  scalaVersion := "2.11.11",
+  libraryDependencies ++= Seq("com.typesafe" % "config" % "1.3.1",
+    "com.github.kxbmap" %% "configs" % "0.4.4"
+    )
   //If you want to run with Provided dependency
   //run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
-lazy val Worksheet = (project in file("."))
+
+lazy val ld4pDataPipeline = (project in file("."))
   .settings(commonSettings)
+
   .aggregate(
     estimator, marcXMLtoBibFrame, estimatorStreaming,ReactiveKafkaConsumer,
     ReactiveKafkaWriter, AkkaStreamMarcReader, marcXMLtoBibFrame,
@@ -31,6 +35,7 @@ lazy val estimator             = ld4pProjects("EstimatorApp")
     commonSettings,
     libraryDependencies ++= Seq(
 
+
       "org.apache.spark" % "spark-core_2.11" % "2.2.0",
       "org.apache.spark" % "spark-streaming_2.11" % "2.2.0",
       "com.github.pathikrit" %% "better-files" % "2.17.1",
@@ -48,11 +53,11 @@ lazy val estimatorStreaming    = ld4pProjects("EstimatorStreamingApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-    "org.marc4j" % "marc4j" % "2.8.2",
-    "org.apache.spark" % "spark-streaming-kafka-0-10_2.11" % "2.2.0",
-    "org.apache.spark" % "spark-core_2.11" % "2.2.0",
-    "org.apache.spark" % "spark-streaming_2.11" % "2.2.0",
-    "net.sf.saxon" % "Saxon-HE" % "9.7.0-20"
+      "org.marc4j" % "marc4j" % "2.8.2",
+      "org.apache.spark" % "spark-streaming-kafka-0-10_2.11" % "2.2.0",
+      "org.apache.spark" % "spark-core_2.11" % "2.2.0",
+      "org.apache.spark" % "spark-streaming_2.11" % "2.2.0",
+      "net.sf.saxon" % "Saxon-HE" % "9.7.0-20"
     ),
     assemblyMergeStrategy in assembly := {
       case PathList("META-INF", xs @ _*) => MergeStrategy.discard
@@ -142,11 +147,7 @@ lazy val ReactiveFolderReader  = ld4pProjects("ReactiveFolderReader")
     ),
     mainClass in assembly := Some("ReactiveFolderReader")
   )
-lazy val ResourceReader = ld4pProjects("ResourceReader")
-  .settings(
-    commonSettings,
-    mainClass in assembly := Some("ResourceReader")
-  )
+
 
 
 
