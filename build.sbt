@@ -18,7 +18,7 @@ lazy val ld4pDataPipeline = (project in file("."))
   .aggregate(
     estimator, marcXMLtoBibFrame, estimatorStreaming,ReactiveKafkaConsumer,
     ReactiveKafkaWriter, AkkaStreamMarcReader, marcXMLtoBibFrame,
-    ReactiveFolderCopier, ReactiveFolderReader,ResourceReader
+    ReactiveFolderCopier, ReactiveFolderReader
   )
 
 
@@ -147,7 +147,3 @@ lazy val ReactiveFolderReader  = ld4pProjects("ReactiveFolderReader")
     ),
     mainClass in assembly := Some("ReactiveFolderReader")
   )
-
-
-
-
