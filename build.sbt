@@ -1,16 +1,17 @@
-
-//name := "ld4p-data-pipeline"
-
 lazy val commonSettings = Seq(
   organization:= "edu.stanford.library",
   version := "1.0.0-SNAPSHOT",
   scalaVersion := "2.11.11",
   libraryDependencies ++= Seq("com.typesafe" % "config" % "1.3.1",
     "com.github.kxbmap" %% "configs" % "0.4.4"
-    )
+    ),
+  resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
   //If you want to run with Provided dependency
   //run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
+
+
+
 
 lazy val ld4pDataPipeline = (project in file("."))
   .settings(commonSettings)
@@ -66,6 +67,10 @@ lazy val estimatorStreaming    = ld4pProjects("EstimatorStreamingApp")
     mainClass in assembly := Some("EstimatorStreamingApp")
   )
 
+//Simple function to help pick banana dependency. Nothing fency
+val banana = (name: String) => "org.w3" %% name % "0.8.4" excludeAll (ExclusionRule(organization = "org.scala-stm"))
+
+
 lazy val ReactiveKafkaConsumer = ld4pProjects("ReactiveKafkaConsumer")
   .settings(
     commonSettings,
@@ -76,6 +81,7 @@ lazy val ReactiveKafkaConsumer = ld4pProjects("ReactiveKafkaConsumer")
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "org.marc4j" % "marc4j" % "2.8.2"
     ),
+    libraryDependencies ++= Seq("banana", "banana-rdf", "banana-sesame").map(banana),
     mainClass in assembly := Some("ReactiveKafkaConsumer")
   )
 
