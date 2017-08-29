@@ -1,31 +1,27 @@
-
 //name := "ld4p-data-pipeline"
 
 lazy val commonSettings = Seq(
   organization:= "edu.stanford.library",
   version := "1.0.0-SNAPSHOT",
   scalaVersion := "2.11.11",
-  libraryDependencies ++= Seq("com.typesafe" % "config" % "1.3.1",
-    "com.github.kxbmap" %% "configs" % "0.4.4"
-    )
+  libraryDependencies ++= Seq(
+    "com.typesafe" % "config" % "1.3.1",
+    "com.github.kxbmap" %% "configs" % "0.4.4",
+    "org.scalatest" %% "scalatest" % "3.0.1" % Test
+  )
   //If you want to run with Provided dependency
   //run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
 
 lazy val ld4pDataPipeline = (project in file("."))
   .settings(commonSettings)
-
   .aggregate(
-    estimator, marcXMLtoBibFrame, estimatorStreaming,ReactiveKafkaConsumer,
+    estimator, marcXMLtoBibFrame, estimatorStreaming, ReactiveKafkaConsumer,
     ReactiveKafkaWriter, AkkaStreamMarcReader, marcXMLtoBibFrame,
     ReactiveFolderCopier, ReactiveFolderReader
   )
 
-
-
-
 def ld4pProjects(name: String): Project = (Project(name, file(name)))
-
 
 /**
   * Core Projects
@@ -34,8 +30,6 @@ lazy val estimator             = ld4pProjects("EstimatorApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-
-
       "org.apache.spark" % "spark-core_2.11" % "2.2.0",
       "org.apache.spark" % "spark-streaming_2.11" % "2.2.0",
       "com.github.pathikrit" %% "better-files" % "2.17.1",
