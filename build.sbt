@@ -13,6 +13,14 @@ lazy val commonSettings = Seq(
   //run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
 
+lazy val akkaSettings = commonSettings ++ Seq(
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-stream" % "2.5.4",
+    "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
+    "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test
+  )
+)
+
 lazy val ld4pDataPipeline = (project in file("."))
   .settings(commonSettings)
   .aggregate(
@@ -26,7 +34,7 @@ def ld4pProjects(name: String): Project = (Project(name, file(name)))
 /**
   * Core Projects
   */
-lazy val estimator             = ld4pProjects("EstimatorApp")
+lazy val estimator = ld4pProjects("EstimatorApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -43,14 +51,14 @@ lazy val estimator             = ld4pProjects("EstimatorApp")
     mainClass in assembly := Some("EstimatorApp")
   )
 
-lazy val estimatorStreaming    = ld4pProjects("EstimatorStreamingApp")
+lazy val estimatorStreaming = ld4pProjects("EstimatorStreamingApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "org.marc4j" % "marc4j" % "2.8.2",
       "org.apache.spark" % "spark-streaming-kafka-0-10_2.11" % "2.2.0",
       "org.apache.spark" % "spark-core_2.11" % "2.2.0",
       "org.apache.spark" % "spark-streaming_2.11" % "2.2.0",
+      "org.marc4j" % "marc4j" % "2.8.2",
       "net.sf.saxon" % "Saxon-HE" % "9.7.0-20"
     ),
     assemblyMergeStrategy in assembly := {
@@ -62,25 +70,19 @@ lazy val estimatorStreaming    = ld4pProjects("EstimatorStreamingApp")
 
 lazy val ReactiveKafkaConsumer = ld4pProjects("ReactiveKafkaConsumer")
   .settings(
-    commonSettings,
+    akkaSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
       "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
-      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
-      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "org.marc4j" % "marc4j" % "2.8.2"
     ),
     mainClass in assembly := Some("ReactiveKafkaConsumer")
   )
 
-lazy val ReactiveKafkaWriter   = ld4pProjects("ReactiveKafkaWriter")
+lazy val ReactiveKafkaWriter = ld4pProjects("ReactiveKafkaWriter")
   .settings(
-    commonSettings,
+    akkaSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
       "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
-      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
-      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
     mainClass in assembly := Some("ReactiveKafkaWriter")
@@ -89,20 +91,17 @@ lazy val ReactiveKafkaWriter   = ld4pProjects("ReactiveKafkaWriter")
 /**
   *  Utils & Demos
   */
-lazy val AkkaStreamMarcReader  = ld4pProjects("AkkaStreamMarcReader")
+lazy val AkkaStreamMarcReader = ld4pProjects("AkkaStreamMarcReader")
   .settings(
-    commonSettings,
+    akkaSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
-      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
-      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1",
       "org.marc4j" % "marc4j" % "2.8.2"
     ),
     mainClass in assembly := Some("AkkaStreamMarcReader")
   )
 
-lazy val marcXMLtoBibFrame     = ld4pProjects("MarcXMLtoBibFrame")
+lazy val marcXMLtoBibFrame = ld4pProjects("MarcXMLtoBibFrame")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -117,26 +116,20 @@ lazy val marcXMLtoBibFrame     = ld4pProjects("MarcXMLtoBibFrame")
     mainClass in assembly := Some("MarcXMLtoBibFrame")
   )
 
-lazy val ReactiveFolderCopier  = ld4pProjects("ReactiveFolderCopier")
+lazy val ReactiveFolderCopier = ld4pProjects("ReactiveFolderCopier")
   .settings(
-    commonSettings,
+    akkaSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
-      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
-      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1",
       "org.marc4j" % "marc4j" % "2.8.2"
     ),
     mainClass in assembly := Some("ReactiveFolderCopier")
   )
 
-lazy val ReactiveFolderReader  = ld4pProjects("ReactiveFolderReader")
+lazy val ReactiveFolderReader = ld4pProjects("ReactiveFolderReader")
   .settings(
-    commonSettings,
+    akkaSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
-      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
-      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
     mainClass in assembly := Some("ReactiveFolderReader")
