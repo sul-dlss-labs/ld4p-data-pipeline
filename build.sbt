@@ -40,7 +40,7 @@ val toolProjectName         = "Tools"
 lazy val tools              = ld4pProjects(toolProjectName).aggregate(AkkaStreamMarcReader)
 
 val demoProjectName         = "Demos"
-lazy val demos              = ld4pProjects(demoProjectName).aggregate(estimator, estimatorStreaming, marcXMLtoBibFrame, ReactiveFolderCopier, ReactiveFolderCopier, ReactiveFolderReader)
+lazy val demos              = ld4pProjects(demoProjectName).aggregate(estimator, estimatorStreaming, marcXMLtoBibFrame, ReactiveFolderCopier, ReactiveFolderReader)
 
 
 /**
