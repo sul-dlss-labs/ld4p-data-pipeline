@@ -7,12 +7,11 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
-import org.marc4j.MarcStreamReader
 
 import scala.concurrent.Future
 
 
-object ReactiveKafkaConsumer extends App {
+/*object ReactiveKafkaConsumer extends App {
 
   println("Starting ReactiveKafkaConsumer ...")
   implicit val system       = ActorSystem("QuickStart")
@@ -42,9 +41,4 @@ object ReactiveKafkaConsumer extends App {
       }
     }
     .runWith(Sink.ignore)
-
-
-
-
-
-}
+}*/
