@@ -140,3 +140,6 @@ project/plugins/project/
 
 ### Test data
 *.mrc
+
+*.iml
+.idea/modules/*.iml
