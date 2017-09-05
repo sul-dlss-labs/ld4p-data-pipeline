@@ -18,7 +18,7 @@ lazy val commonSettings = Seq (
 )
 
 
-lazy val ld4pDataPipeline = (project in file("."))
+lazy val `ld4p-data-pipeline` = (project in file("."))
   .settings(commonSettings)
 
   .aggregate( SparkStreamingConvertors, reactiveConsumers, reactiveWriters,
@@ -214,7 +214,7 @@ lazy val ReactiveFolderReader  = ld4pProjects(demoProjectName + "/ReactiveFolder
 lazy val AkkaStreamMarcReader  = ld4pProjects(toolProjectName + "/AkkaStreamMarcReader")
   .settings(
     commonSettings,
-    libraryDependencies ++= Seq(
+    libraryDependencies ++= Seq (
       "com.typesafe.akka" %% "akka-stream" % "2.5.4",
       "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
