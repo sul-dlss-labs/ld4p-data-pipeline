@@ -21,7 +21,7 @@ lazy val commonSettings = Seq (
 lazy val `ld4p-data-pipeline` = (project in file("."))
   .settings(commonSettings)
 
-  .aggregate( SparkStreamingConvertors, reactiveConsumers, reactiveWriters,
+  .aggregate( SparkStreamingConvertors, reactiveConsumers, reactiveProducers,
     tools, demos
   )
 
@@ -33,8 +33,8 @@ lazy val SparkStreamingConvertors = ld4pProjects(sparkStreamingConvertors).aggre
 val consumersProjectName    = "ReactiveConsumers"
 lazy val reactiveConsumers  = ld4pProjects(consumersProjectName).aggregate(ReactiveKafkaConsumer)
 
-val WritersProjectName      = "ReactiveWriters"
-lazy val reactiveWriters    = ld4pProjects(WritersProjectName).aggregate(ReactiveKafkaWriter)
+val producerProjectName      = "ReactiveProducers"
+lazy val reactiveProducers  = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaProducer)
 
 val toolProjectName         = "Tools"
 lazy val tools              = ld4pProjects(toolProjectName).aggregate(AkkaStreamMarcReader)
@@ -105,7 +105,9 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     commonSettings,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-stream" % "2.5.4",
-      "com.typesafe.akka" %% "akka-stream-kafka" % "0.16"
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
+      "com.github.pathikrit" %% "better-files" % "2.17.1",
+      "org.marc4j" % "marc4j" % "2.8.2"
     ),
     libraryDependencies ++= Seq("banana", "banana-rdf", "banana-jena").map(banana),
     assemblyMergeStrategy in assembly := {
@@ -115,7 +117,7 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     mainClass in assembly := Some("ReactiveKafkaStardogConsumer")
   )
 
-lazy val ReactiveKafkaWriter   = ld4pProjects(WritersProjectName + "/ReactiveKafkaWriter")
+lazy val ReactiveKafkaProducer   = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -125,7 +127,7 @@ lazy val ReactiveKafkaWriter   = ld4pProjects(WritersProjectName + "/ReactiveKaf
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
-    mainClass in assembly := Some("ReactiveKafkaWriter")
+    mainClass in assembly := Some("ReactiveKafkaProducer")
   )
 
 /**

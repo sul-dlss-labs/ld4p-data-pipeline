@@ -1,17 +1,4 @@
-import java.io.ByteArrayInputStream
-
-import akka.actor.ActorSystem
-import akka.kafka.scaladsl.Consumer
-import akka.kafka.{ConsumerSettings, Subscriptions}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Sink
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
-
-import scala.concurrent.Future
-
-
-/*object ReactiveKafkaConsumer extends App {
+object ReactiveKafkaConsumer extends App {
 
   println("Starting ReactiveKafkaConsumer ...")
   implicit val system       = ActorSystem("QuickStart")
@@ -41,4 +28,4 @@ import scala.concurrent.Future
       }
     }
     .runWith(Sink.ignore)
-}*/
+}

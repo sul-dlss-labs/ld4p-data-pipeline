@@ -143,3 +143,4 @@ project/plugins/project/
 
 *.iml
 .idea/modules/*.iml
+.idea/*.xml

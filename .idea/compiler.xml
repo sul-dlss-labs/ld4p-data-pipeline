@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="banana-rdf" target="1.8" />
+      <module name="examples" target="1.8" />
+      <module name="jena" target="1.8" />
+      <module name="jsonld" target="1.8" />
+      <module name="ntriplesJS" target="1.8" />
+      <module name="ntriplesJVM" target="1.8" />
+      <module name="plantainJS" target="1.8" />
+      <module name="plantainJVM" target="1.8" />
+      <module name="rdfJS" target="1.8" />
+      <module name="rdfJVM" target="1.8" />
+      <module name="rdfTestSuiteJS" target="1.8" />
+      <module name="rdfTestSuiteJVM" target="1.8" />
+      <module name="sesame" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

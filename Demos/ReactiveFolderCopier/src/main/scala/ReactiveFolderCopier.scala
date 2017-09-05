@@ -66,7 +66,6 @@ object ReactiveFolderCopier extends App {
     case Failure(e) => println(s"Task failed in: ${System.currentTimeMillis() - starttime}")
   }
 
-  StdIn.readLine()
   system.terminate()
 
 }

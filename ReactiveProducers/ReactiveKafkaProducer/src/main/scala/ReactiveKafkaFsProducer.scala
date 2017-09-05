@@ -16,7 +16,7 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 import configs.syntax._
 
-object ReactiveKafkaWriter extends App {
+object ReactiveKafkaFsProducer extends App {
 
   println("Starting ReactiveKafkaWriter ....")
 
