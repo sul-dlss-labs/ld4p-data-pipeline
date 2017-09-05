@@ -59,13 +59,14 @@ object ReactiveFolderCopier extends App {
 
   val starttime = System.currentTimeMillis()
 
-  val done = source.async.via(readflow).async.via(writeflow).runWith(Sink.ignore)
+  val done = source.via(readflow).via(writeflow).runWith(Sink.ignore)
 
   done.onComplete {
     case Success(e) => println(s"Task succeedIn: ${System.currentTimeMillis() - starttime}")
     case Failure(e) => println(s"Task failed in: ${System.currentTimeMillis() - starttime}")
   }
 
+  StdIn.readLine()
   system.terminate()
 
 }
