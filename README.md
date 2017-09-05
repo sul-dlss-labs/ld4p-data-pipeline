@@ -27,9 +27,10 @@ sbt ++2.11.8 publishLocal
 
 These steps walk through setting up a development environment for the `ReactiveKafkaWriter` module primarily, but should be generalizable to other Scala modules in this codebase.
 
-1. Download the Project:
+### 1. Download the Project:
   - Clone this [ld4p-data-pipeline](https://github.com/ld4p-data-pipeline) git repository
-2. Compile the Project: Start SBT in console (```$ sbt ```) and in the SBT console:  
+
+### 2. Compile the Project: Start SBT in console (`sbt`) and in the SBT console:  
   - SBT dependencies:
     - Sometimes listed, sometimes provided
     - Libraries with distribution on Spark cluster part?
@@ -55,7 +56,8 @@ These steps walk through setting up a development environment for the `ReactiveK
   $ assembly # builds the über jar for your current project
   $ tasks # shows tasks available ; same conventions as with Maven
   ```
-3. Have Kafka & Spark Running Locally
+
+### 3. Have Kafka & Spark Running Locally
   - Can use package manager versions, then the project itself will clone that
   - **Kafka:**
     - [Download Kafka](https://kafka.apache.org/downloads) (or can use homebrew on Mac)
@@ -96,7 +98,8 @@ These steps walk through setting up a development environment for the `ReactiveK
         - Has implications on how data moves around depending for the operation you’re running
       - Start slave doesn’t start unless you point to something
           - Start-all doesn’t require that
-4. Launch the Application
+
+### 4. Launch the Application
   - Deploy the App to Spark: `spark-submit --class EstimatorStreamingApp --name EstimatorStreamingApp --master spark:/SPARK-MASTER-URL.local:7077 --deploy-mode cluster --executor-memory 14G --num-executors 2`
     - `Spark-job —class Class of App —name Name of App —master master node URL —deploy-mode cluster (still even running locally) — executor-memory 14G (if not available, will use less) —num-executors`
     - you can retrieve the Spark Master and Slave Node URLs from the GUI
@@ -106,7 +109,8 @@ These steps walk through setting up a development environment for the `ReactiveK
     - For Darren, had a permission issue on logging for the app, so used `sudo`, e.g.
       - `sudo /opt/spark/bin/spark-submit --class EstimatorStreamingApp --name EstimatorStreamingApp --master spark://sul-dlweber-ubuntu:7077  --deploy-mode cluster --executor-memory 6G --num-executors 1`
       - `/data/src/dlss/ld4l/ld4p-data-pipeline/EstimatorStreamingApp/target/scala-2.11/EstimatorStreamingApp-assembly-1.0.0-SNAPSHOT.jar`
-5. Create a Kafka Topic for the MARC
+
+### 5. Create a Kafka Topic for the MARC
   - Need to create a Kafka topic for MARC21
     - There are options for auto-creating topics in Kafka when that topic is written to
     - However, there is an error of Kafka auto creating that topic when Spark was looking to create
@@ -116,7 +120,8 @@ These steps walk through setting up a development environment for the `ReactiveK
     - Should have 16 partitions
   - FYI: Deleting topics: doesn’t actually delete the topic
     - In Kafka `server.properties` file, near the top, commented out but for test/dev environments, edit that file and uncomment that disable deletion of topics ("delete topic enable")
-6. Grab the MARC21 data & Set in the Appropriate Space for your Application
+
+### 6. Grab the MARC21 data & Set in the Appropriate Space for your Application
   - Need the files as structure in directory from Daniel
       - Daniel will put the data here: `ld4p@sul-ld4p-converter-dev.stanford.edu:~/data/casalini?`
       - The structure: should have 3 folders `casalini?` with all the individual files below those directories.
@@ -125,14 +130,16 @@ These steps walk through setting up a development environment for the `ReactiveK
       - Open question from Atz: Configure this to point to the data you want so there isn’t a dependency on the data structure?
       - Example from Daniel: `{HOME}/Dev/data/ld4pData`
       - Need this data on each machine for clusters to work
-7. ReactiveKafkaWriter is ready to be run
+
+### 7. ReactiveKafkaWriter is ready to be run
   - Configured to read from the Casalini MARC data as downloaded & configured above (36k records)
   - From CLI: `java -jar ReactiveKafkaWriter/target/scala-2.11/ReactiveKafkaWriter-assembly-1.0.0-SNAPSHOP.jar`
   - From the GUI, should see the output
       - Spark Job input (you can see the Spark GUI to see the data processing)
       - Kafka Manager for view (separate application to set up; not set up here)
   - Partitions in Kafka auto configure number of tasks executing
-9. How to kill a Spark job:
+
+### 8. How to kill a Spark job:
   - To stop properly:
     - Stop master (spark jobs)
     - Stop slave (spark jobs)
@@ -140,5 +147,6 @@ These steps walk through setting up a development environment for the `ReactiveK
     - Reads the data from Kafka, doesn’t care about where the data is
     - Application is done in such a way that it doesn’t read all the data from the beginning, but reads from the last offset
     - Start spark streaming, spark reading
-10. Stop / Shut down your Kafka and Zoopeer instances
+
+### 9. Stop / Shut down your Kafka and Zoopeer instances
   - If using homebrew, can run `brew services stop kafka` then `brew services stop zookeeper`
