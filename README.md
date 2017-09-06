@@ -150,3 +150,6 @@ These steps walk through setting up a development environment for the `ReactiveK
 
 ### 9. Stop / Shut down your Kafka and Zoopeer instances
   - If using homebrew, can run `brew services stop kafka` then `brew services stop zookeeper`
+
+### 10. Automated Deployment on Amazon via Capistrano
+  - https://github.com/darrenleeweber/aws-ops
