@@ -3,6 +3,11 @@ sudo: false
 scala:
   - 2.12.3
   - 2.11.11
+before_install:
+  - git clone https://github.com/banana-rdf/banana-rdf
+  - cd banana-rdf
+  - sbt ++2.11.8 publishLocal
+  - cd ..
 matrix:
   allow_failures:
   - scala: 2.12.3 # spark is not yet compatible w/ scala 2.12
