@@ -39,27 +39,27 @@ object ReactiveFolderCopier extends App {
 
   val source: Source[Path, NotUsed] = Directory.ls(inDir.path)
 
-  /*val readflow  = Flow[Path].mapAsyncUnordered(16){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
+  val readflow  = Flow[Path].mapAsyncUnordered(16){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
   val writeflow = Flow[(String, Array[Byte])].mapAsyncUnordered(16) { copy =>
     Future {
      tryDir.flatMap{ dir => Try {dir.createChild(copy._1)}}.foreach { file =>
        file.writeByteArray(copy._2)
      }
     }
-  }*/
+  }
 
 
-  val readflow  = Flow[Path].map{e => (e.getFileName.toString, File(e.toAbsolutePath).byteArray)}
+  /*val readflow  = Flow[Path].map{e => (e.getFileName.toString, File(e.toAbsolutePath).byteArray)}
   val writeflow = Flow[(String, Array[Byte])].map { copy =>
       tryDir.flatMap{ dir => Try {dir.createChild(copy._1)}}.foreach { file =>
         file.writeByteArray(copy._2)
       }
-  }
+  }*/
 
 
   val starttime = System.currentTimeMillis()
 
-  val done = source.via(readflow).via(writeflow).runWith(Sink.ignore)
+  val done = source.async.via(readflow).async.via(writeflow).runWith(Sink.ignore)
 
   done.onComplete {
     case Success(e) => println(s"Task succeedIn: ${System.currentTimeMillis() - starttime}")
@@ -67,6 +67,7 @@ object ReactiveFolderCopier extends App {
   }
 
   StdIn.readLine()
+
   system.terminate()
 
 }

@@ -127,7 +127,7 @@ lazy val ReactiveKafkaProducer   = ld4pProjects(producerProjectName + "/Reactive
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
-    mainClass in assembly := Some("ReactiveKafkaProducer")
+    mainClass in assembly := Some("ReactiveKafkaFsProducer")
   )
 
 /**

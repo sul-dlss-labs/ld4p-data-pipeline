@@ -66,7 +66,7 @@ trait SparqlOpertions extends SPARQLExampleDependencies { self =>
       graph.foreach(turtleWriter.write(_, to, ""))
     }
 
-    val endpoint = new URL("http://192.168.0.102:5820/CasaliniDB/update")
+    val endpoint = new URL("http://localhost:5820/CasaliniDB/update")
     val query    = parseUpdate(s"""INSERT DATA {${to.toString}}""".stripMargin).get
     val res      = endpoint.executeUpdate(query)
 
@@ -120,7 +120,7 @@ object ReactiveKafkaStardogConsumer extends App {
 
   val kafkaSource = Consumer.plainSource(consumerSettings, subscription).map(e => e.value())
 
-  val worker = Flow[String].groupedWithin(500, 20 second)
+  val worker = Flow[String].groupedWithin(50, 20 second)
       .mapAsyncUnordered(1){ e =>
         Future {SparlOperationsWithJena.executeUpdateQuery(e)}
       }

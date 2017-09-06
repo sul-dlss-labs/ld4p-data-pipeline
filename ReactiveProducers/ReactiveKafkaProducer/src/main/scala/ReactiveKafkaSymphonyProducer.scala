@@ -1,3 +1,5 @@
+/*
 object ReactiveKafkaSymphonyProducer extends App {
 
 }
+*/
