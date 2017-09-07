@@ -50,8 +50,8 @@ object HighlyReactiveMarcReader  extends App {
   val binData               = FileIO.fromPath(inFile.path)
 
 
-  val m21Stream = binData.
-    via(Framing.delimiter(ByteString(29.asInstanceOf[Char]), maximumFrameLength = 10000, allowTruncation = true))
+  val m21Stream = binData.async
+    .via(Framing.delimiter(ByteString(29.asInstanceOf[Char]), maximumFrameLength = 10000, allowTruncation = true))
     .mapAsync(16) { e =>
       Future {
         val in = new ByteArrayInputStream((e ++ ByteString(29.asInstanceOf[Char])).toArray)
@@ -63,7 +63,7 @@ object HighlyReactiveMarcReader  extends App {
 
 
   m21Stream.runForeach{
-    case None => print("Failure to read")
+    case None => println("Failure to read")
     case Some(e) => println(e.toString)
   }
 
