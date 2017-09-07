@@ -18,34 +18,30 @@ lazy val commonSettings = Seq (
 
 lazy val `ld4p-data-pipeline` = (project in file("."))
   .settings(commonSettings)
-
-  .aggregate( SparkStreamingConvertors, reactiveConsumers, reactiveProducers,
+  .aggregate(sparkStreamingConvertors, reactiveConsumers, reactiveProducers,
     tools, demos
   )
 
+val sparkStreamingConvertorsName  = "SparkStreamingConvertors"
+lazy val sparkStreamingConvertors = ld4pProjects(sparkStreamingConvertorsName).aggregate(m21toBibFDumpConvApp, m21toBibFContinousConvApp)
 
+val consumersProjectName   = "ReactiveConsumers"
+lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveKafkaConsumer)
 
-val sparkStreamingConvertors      = "SparkStreamingConvertors"
-lazy val SparkStreamingConvertors = ld4pProjects(sparkStreamingConvertors).aggregate(m21toBibFDumpConvApp, m21toBibFContinousConvApp)
+val producerProjectName    = "ReactiveProducers"
+lazy val reactiveProducers = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaProducer)
 
-val consumersProjectName    = "ReactiveConsumers"
-lazy val reactiveConsumers  = ld4pProjects(consumersProjectName).aggregate(ReactiveKafkaConsumer)
+val toolProjectName        = "Tools"
+lazy val tools             = ld4pProjects(toolProjectName).aggregate(AkkaStreamMarcReader)
 
-val producerProjectName      = "ReactiveProducers"
-lazy val reactiveProducers  = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaProducer)
-
-val toolProjectName         = "Tools"
-lazy val tools              = ld4pProjects(toolProjectName).aggregate(AkkaStreamMarcReader)
-
-val demoProjectName         = "Demos"
-lazy val demos              = ld4pProjects(demoProjectName).aggregate(estimator, estimatorStreaming, marcXMLtoBibFrame, ReactiveFolderCopier, ReactiveFolderReader)
-
+val demoProjectName        = "Demos"
+lazy val demos             = ld4pProjects(demoProjectName).aggregate(estimator, estimatorStreaming, marcXMLtoBibFrame, ReactiveFolderCopier, ReactiveFolderReader, singleMetricExample)
 
 /**
   *  The Concrete Projects Applications
   */
 
-lazy val m21toBibFDumpConvApp = ld4pProjects(sparkStreamingConvertors + "/M21toBibFDumpConvApp")
+lazy val m21toBibFDumpConvApp = ld4pProjects(sparkStreamingConvertorsName + "/M21toBibFDumpConvApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -68,8 +64,7 @@ lazy val m21toBibFDumpConvApp = ld4pProjects(sparkStreamingConvertors + "/M21toB
     mainClass in assembly := Some("M21toBibFDumpConvApp")
   )
 
-
-lazy val m21toBibFContinousConvApp =   ld4pProjects(sparkStreamingConvertors + "/M21toBibFContinousConvApp")
+lazy val m21toBibFContinousConvApp = ld4pProjects(sparkStreamingConvertorsName + "/M21toBibFContinousConvApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -90,12 +85,7 @@ lazy val m21toBibFContinousConvApp =   ld4pProjects(sparkStreamingConvertors + "
     mainClass in assembly := Some("M21toBibFContinousConvApp")
 )
 
-
-
-
-
-
-//Simple function to help pick banana dependency. Nothing fency
+// Simple function to help pick banana dependency. Nothing fency
 val banana = (name: String) => "org.w3" %% name % "0.8.4" excludeAll (ExclusionRule(organization = "org.scala-stm"))
 
 lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveKafkaConsumer")
@@ -115,7 +105,7 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     mainClass in assembly := Some("ReactiveKafkaStardogConsumer")
   )
 
-lazy val ReactiveKafkaProducer   = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
+lazy val ReactiveKafkaProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -125,14 +115,14 @@ lazy val ReactiveKafkaProducer   = ld4pProjects(producerProjectName + "/Reactive
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
-    mainClass in assembly := Some("ReactiveKafkaFsProducer")
+    mainClass in assembly := Some("ReactiveKafkaProducer")
   )
 
 /**
   *  Tools & Demos
   */
 
-lazy val estimator             = ld4pProjects(demoProjectName + "/EstimatorApp")
+lazy val estimator = ld4pProjects(demoProjectName + "/EstimatorApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -149,7 +139,7 @@ lazy val estimator             = ld4pProjects(demoProjectName + "/EstimatorApp")
     mainClass in assembly := Some("EstimatorApp")
   )
 
-lazy val estimatorStreaming    = ld4pProjects(demoProjectName + "/EstimatorStreamingApp")
+lazy val estimatorStreaming = ld4pProjects(demoProjectName + "/EstimatorStreamingApp")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -166,8 +156,7 @@ lazy val estimatorStreaming    = ld4pProjects(demoProjectName + "/EstimatorStrea
     mainClass in assembly := Some("EstimatorStreamingApp")
   )
 
-
-lazy val marcXMLtoBibFrame     = ld4pProjects(demoProjectName + "/MarcXMLtoBibFrame")
+lazy val marcXMLtoBibFrame = ld4pProjects(demoProjectName + "/MarcXMLtoBibFrame")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -182,7 +171,7 @@ lazy val marcXMLtoBibFrame     = ld4pProjects(demoProjectName + "/MarcXMLtoBibFr
     mainClass in assembly := Some("MarcXMLtoBibFrame")
   )
 
-lazy val ReactiveFolderCopier  = ld4pProjects(demoProjectName + "/ReactiveFolderCopier")
+lazy val ReactiveFolderCopier = ld4pProjects(demoProjectName + "/ReactiveFolderCopier")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -195,7 +184,7 @@ lazy val ReactiveFolderCopier  = ld4pProjects(demoProjectName + "/ReactiveFolder
     mainClass in assembly := Some("ReactiveFolderCopier")
   )
 
-lazy val ReactiveFolderReader  = ld4pProjects(demoProjectName + "/ReactiveFolderReader")
+lazy val ReactiveFolderReader = ld4pProjects(demoProjectName + "/ReactiveFolderReader")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -207,11 +196,16 @@ lazy val ReactiveFolderReader  = ld4pProjects(demoProjectName + "/ReactiveFolder
     mainClass in assembly := Some("ReactiveFolderReader")
   )
 
+lazy val singleMetricExample = ld4pProjects(demoProjectName + "/SingleMetricExample")
+  .settings(
+    commonSettings,
+    mainClass in assembly := Some("SingleMetricExample")
+  )
 
 /**
   * Tools
   */
-lazy val AkkaStreamMarcReader  = ld4pProjects(toolProjectName + "/AkkaStreamMarcReader")
+lazy val AkkaStreamMarcReader = ld4pProjects(toolProjectName + "/AkkaStreamMarcReader")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq (
