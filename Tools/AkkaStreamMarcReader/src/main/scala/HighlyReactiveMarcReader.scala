@@ -24,7 +24,12 @@ import scala.io.StdIn
   *
   * - Akka-Stream FileIO that stream the content of a file as chunck of Bytes
   *
-  * -
+  * - Akka Stream Framing.delimiter to frame the Marc21 Records
+  *
+  * Note Marc4j is only used here for displaying the records, but it is not used to read the data.
+  *
+  * With a Reader as such when can integrate readying dump into a reactive stream that send data downstream
+  * such as in KAFKA
   *
   */
 object HighlyReactiveMarcReader  extends App {
