@@ -1,22 +1,20 @@
 
-
-
 def ld4pProjects(pathName: String): Project = (Project(pathName.split("/").last, file(pathName)))
-
 
 lazy val commonSettings = Seq (
   organization:= "edu.stanford.library",
   version := "1.0.0-SNAPSHOT",
   scalaVersion := "2.11.11",
-  libraryDependencies ++= Seq("com.typesafe" % "config" % "1.3.1",
-    "com.github.kxbmap" %% "configs" % "0.4.4"
-    ),
+  libraryDependencies ++= Seq(
+    "com.typesafe" % "config" % "1.3.1",
+    "com.github.kxbmap" %% "configs" % "0.4.4",
+    "nl.grons" %% "metrics-scala" % "3.5.9_a2.3",
+    "org.scalatest" %% "scalatest" % "3.0.1" % Test
+  ),
   resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
-
-  //If you want to run with Provided dependency
-  //run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
+  // If you want to run with Provided dependency
+  // run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
-
 
 lazy val `ld4p-data-pipeline` = (project in file("."))
   .settings(commonSettings)
