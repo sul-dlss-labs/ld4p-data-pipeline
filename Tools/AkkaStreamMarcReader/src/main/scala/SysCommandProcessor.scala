@@ -19,6 +19,22 @@ import akka.stream.scaladsl.Framing
 import akka.stream.scaladsl._
 import configs.syntax._
 
+
+/**
+  *
+  * A Reactive Stream based MarcReader that stream the result of a command line execution
+  *
+  *
+  *
+  *
+  *
+  *
+  *
+  *
+  *
+  */
+
+
 object SysCommandProcessor extends App {
 
 
@@ -43,6 +59,7 @@ object SysCommandProcessor extends App {
 
       val source = StreamConverters.fromInputStream(() => outIn)
 
+      println("here")
       source.async.via(flow).runWith(Sink.foreachParallel(16) {
         e =>
           val in = new ByteArrayInputStream((e ++ ByteString(29.asInstanceOf[Char])).toArray)
@@ -58,7 +75,7 @@ object SysCommandProcessor extends App {
   )
 
 
-  s"cat ${inFile.path.toString}".run(processIO)
+  "ssh -K sirsi@morison.stanford.edu ./catDump.sh /s/SUL/Dataload/Oracle/Package_report/BSTAGE_BIB.BIB121103.MRC.030848.keys".run(processIO)
 
   StdIn.readLine()
   system.terminate()
