@@ -4,22 +4,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Random}
 
 import com.codahale.metrics.ConsoleReporter
-import java.util.concurrent.TimeUnit;
-
-object OurApplication { // These would be extracted to be common to all our subprojects
-  val metricRegistry = new com.codahale.metrics.MetricRegistry()
-}
-trait Instrumented extends nl.grons.metrics.scala.InstrumentedBuilder {
-  val metricRegistry = OurApplication.metricRegistry
-}
+import java.util.concurrent.TimeUnit
 
 object SingleMetricExample extends Instrumented {
   val generator = new Random
   private[this] val loading = metrics.timer("execution")
-  val reporter = ConsoleReporter.forRegistry(metricRegistry)
-                                .convertRatesTo(TimeUnit.SECONDS)
-                                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                                .build()
+  val reporter = MetricReporter.reporter
 
   // Sleeps 0, 1, 2 or 3 seconds randomly to simulate varying execution times
   def asyncDoIt(i: Int): Future[Int] = {
@@ -36,7 +26,8 @@ object SingleMetricExample extends Instrumented {
   }
 
   def main(args: Array[String]) {
-    reporter.start(10, TimeUnit.SECONDS)
+    val duration = if (args.isEmpty) 10 else args(0).toInt
+    reporter.start(duration, TimeUnit.SECONDS)
     (1 to 10)
       .map(elem => { println(s"before: $elem"); elem })
       .map(elem => {
@@ -48,7 +39,7 @@ object SingleMetricExample extends Instrumented {
         elem
       })
 
-    println("\nOutputting metrics every 10 seconds, or press 'return' to exit.\n")
+    println(s"\nOutputting metrics every $duration seconds, or press 'return' to exit.\n")
     StdIn.readLine() // Wait, to avoid closing the chain before the Futures complete
     reporter.stop
   }
