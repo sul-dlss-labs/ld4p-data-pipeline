@@ -100,6 +100,8 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     libraryDependencies ++= Seq("banana", "banana-rdf", "banana-jena").map(banana),
     assemblyMergeStrategy in assembly := {
       case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case "application.conf" => MergeStrategy.concat
+      case "reference.conf"   => MergeStrategy.concat
       case x => MergeStrategy.first
     },
     mainClass in assembly := Some("ReactiveKafkaStardogConsumer")
@@ -115,7 +117,7 @@ lazy val ReactiveKafkaProducer = ld4pProjects(producerProjectName + "/ReactiveKa
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
-    mainClass in assembly := Some("ReactiveKafkaProducer")
+    mainClass in assembly := Some("ReactiveKafkaFsProducer")
   )
 
 /**
