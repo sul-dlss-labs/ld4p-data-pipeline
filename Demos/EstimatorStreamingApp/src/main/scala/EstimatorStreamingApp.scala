@@ -74,6 +74,8 @@ object EstimatorStreamingApp  {
       }
     }
 
+    //Marc4jRecords.cache()
+
     val MarcXmlRecords = Marc4jRecords.map(e => marcToXML(e))
 
     val BibFrameRDFRecords = MarcXmlRecords.mapPartitions { s =>

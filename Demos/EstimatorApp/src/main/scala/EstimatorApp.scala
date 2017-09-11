@@ -47,6 +47,7 @@ object EstimatorApp {
       }
     }
 
+    //Marc4jRecords.cache()
 
     val MarcXmlRecords = Marc4jRecords.map(e => marcToXML(e))
 
