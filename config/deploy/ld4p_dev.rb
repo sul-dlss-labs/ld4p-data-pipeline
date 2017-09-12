@@ -16,6 +16,35 @@ server "ld4p_dev_spark_slave2", user: "root", roles: %w{redhat spark slave}
 server "ld4p_dev_spark_slave3", user: "root", roles: %w{redhat spark slave}
 
 
+# Setup the environment variables for the spark app
+
+set :ld4p_data, File.join(fetch(:deploy_to), 'current', 'src', 'main', 'resources', 'xsl')
+set :bootstrap_servers, "ec2-34-213-81-65.us-west-2.compute.amazonaws.com:9092,ec2-34-214-42-7.us-west-2.compute.amazonaws.com:9092,ec2-52-36-184-167.us-west-2.compute.amazonaws.com:9092"
+
+set :default_env, {
+  LD4P_DATA: fetch(:ld4p_data),
+  BOOTSTRAP_SERVERS: fetch(:bootstrap_servers)
+}
+
+# Set the /etc/environment
+def spark_environment
+  # remove any existing entries
+  sudo("sed -i -e '/BEGIN_LD4P_ENV/,/END_LD4P_ENV/{ d; }' /etc/environment")
+  # append new entries
+  sudo("echo '### BEGIN_LD4P_ENV' | sudo tee -a /etc/environment > /dev/null")
+  sudo("echo 'export LD4P_DATA=#{fetch(:ld4p_data)}' | sudo tee -a /etc/environment > /dev/null")
+  sudo("echo 'export BOOTSTRAP_SERVERS=#{fetch(:bootstrap_servers)}' | sudo tee -a /etc/environment > /dev/null")
+  sudo("echo '### END_LD4P_ENV' | sudo tee -a /etc/environment > /dev/null")
+end
+
+after :deploy, :update_env do
+  on roles(:spark) do
+    spark_environment
+  end
+end
+
+
+
 # role-based syntax
 # ==================
 
