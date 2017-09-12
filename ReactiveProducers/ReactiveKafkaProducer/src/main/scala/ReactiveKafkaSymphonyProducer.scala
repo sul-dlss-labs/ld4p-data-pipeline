@@ -70,7 +70,7 @@ object ReactiveKafkaSymphonyProducer extends App {
       }
       case Some(e) => {
         if (e == "symphony")
-          (s"cat ${file}" #| "/s/sirsi/Unicorn/Bin/catalogdump -om -kc -h 2>/dev/null").run(processIO)
+          s"ssh -K sirsi@morison.stanford.edu /s/SUL/Bin/LD4P/catDump.sh ${file}".run(processIO)
         else
           println("Any second argument will do, but usage should really be: ReactiveKafkaSymphonyProducer [ckey_file] symphony")
       }
