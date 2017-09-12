@@ -110,8 +110,10 @@ object ReactiveKafkaStardogConsumer extends App {
 
   val config = ConfigFactory.load()
   val bootstrapServers = config.getOrElse("bootstrapServers", "").toOption.fold("")(identity(_))
+  val stardogBatchSize = config.getOrElse("stardogBatchSize", "50").toOption.fold("50")(identity(_)).toInt
 
   println(s"Using bootstrap servers: ${bootstrapServers}")
+  println(s"Using stardogBatchSize: ${stardogBatchSize}")
 
   object SparlOperationsWithJena extends SparqlOpertions with JenaModuleExtended
 
@@ -126,7 +128,7 @@ object ReactiveKafkaStardogConsumer extends App {
 
   val kafkaSource = Consumer.plainSource(consumerSettings, subscription).map(e => e.value())
 
-  val worker = Flow[String].groupedWithin(50, 20 second)
+  val worker = Flow[String].groupedWithin(stardogBatchSize, 20 second)
       .mapAsyncUnordered(1){ e =>
         Future {SparlOperationsWithJena.executeUpdateQuery(e)}
       }
