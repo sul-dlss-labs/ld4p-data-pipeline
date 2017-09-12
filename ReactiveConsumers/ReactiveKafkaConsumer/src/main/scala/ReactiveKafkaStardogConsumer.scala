@@ -5,12 +5,12 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.net.URL
 import java.nio.charset.StandardCharsets
 
-
 import akka.actor.ActorSystem
 import akka.kafka.{ConsumerSettings, Subscriptions}
 import akka.kafka.scaladsl.Consumer
 import akka.stream.{ActorMaterializer, ClosedShape, FlowShape, SinkShape}
 import akka.stream.scaladsl.{Balance, Flow, GraphDSL, Merge, RunnableGraph, Sink}
+import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
 import org.w3.banana.{RDFXMLWriterModule, TurtleReaderModule, _}
@@ -20,6 +20,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
+import configs.syntax._
 
 
 trait SparqlHttpModuleWithUpdate extends RDFModule {
@@ -107,10 +108,17 @@ object ReactiveKafkaStardogConsumer extends App {
   implicit val materializer = ActorMaterializer()
   implicit val ec           = system.dispatcher
 
+  val config = ConfigFactory.load()
+  val bootstrapServers = config.getOrElse("bootstrapServers", "").toOption.fold("")(identity(_))
+  val stardogBatchSize = config.getOrElse("stardogBatchSize", "50").toOption.fold("50")(identity(_)).toInt
+
+  println(s"Using bootstrap servers: ${bootstrapServers}")
+  println(s"Using stardogBatchSize: ${stardogBatchSize}")
+
   object SparlOperationsWithJena extends SparqlOpertions with JenaModuleExtended
 
   val consumerSettings = ConsumerSettings(system, new StringDeserializer, new StringDeserializer)
-    .withBootstrapServers("localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092, 127.0.0.1:9092")
+    .withBootstrapServers(bootstrapServers)
     .withGroupId("group1")
     .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
 
@@ -120,7 +128,7 @@ object ReactiveKafkaStardogConsumer extends App {
 
   val kafkaSource = Consumer.plainSource(consumerSettings, subscription).map(e => e.value())
 
-  val worker = Flow[String].groupedWithin(50, 20 second)
+  val worker = Flow[String].groupedWithin(stardogBatchSize, 20 second)
       .mapAsyncUnordered(1){ e =>
         Future {SparlOperationsWithJena.executeUpdateQuery(e)}
       }

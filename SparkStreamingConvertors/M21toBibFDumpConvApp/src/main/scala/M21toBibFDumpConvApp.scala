@@ -46,10 +46,10 @@ object ExecutionService {
 
 object KafkaStreamService {
 
-  def apply (ssc: StreamingContext) = {
+  def apply (ssc: StreamingContext, bootstrapServers: String) = {
 
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092, 127.0.0.1:9092",
+      "bootstrap.servers" -> bootstrapServers,
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[ByteArrayDeserializer],
       "group.id" -> "use_a_separate_group_id_for_each_stream",
@@ -80,8 +80,13 @@ object M21toBibFDumpConvApp {
     val ssc                 = new StreamingContext(conf, Seconds(2))
     val marc4jErrors        = ssc.sparkContext.longAccumulator("mar4jErrors")
     val XMLtoBibFrameErrors = ssc.sparkContext.longAccumulator("XMLtoBibFrameErrors")
-    val stream              = KafkaStreamService(ssc)
+    val config              = ConfigFactory.load()
+    val bootstrapServers    = config.getOrElse("bootstrapServers", "").toOption.fold("")(identity(_))
 
+    val stream              = KafkaStreamService(ssc, bootstrapServers)
+
+
+    println(s"Using bootstrap servers: ${bootstrapServers}")
 
     val Marc4jRecords = stream.flatMap { e =>
 
