@@ -161,5 +161,46 @@ When restarting the Spark streaming app:
 
 If using homebrew, can run `brew services stop kafka` then `brew services stop zookeeper`
 
-### 10. Automated Deployment on Amazon via Capistrano
+### 10. Deployment on Amazon via Capistrano
+
+Provision AWS systems, e.g. use
 - https://github.com/darrenleeweber/aws-ops
+  - generic utilities for AWS EC2 and services (ZooKeeper, Kafka)
+- https://github.com/sul-dlss/spark-ec2
+  - https://github.com/sul-dlss/ld4p-data-pipeline/wiki/Provision-Spark-on-Amazon-EC2
+
+Once the AWS systems are available, setup `~/.ssh/config` and `/etc/hosts`, e.g.
+
+```
+# ~/.ssh/config
+
+Host ld4p_dev_spark_master
+    User root
+    Hostname {aws_public_dns}
+    IdentityFile ~/.ssh/{key}.pem
+    Port 22
+
+Host ld4p_dev_spark_slave1
+    User root
+    Hostname {aws_public_dns}    
+    IdentityFile ~/.ssh/{key}.pem    
+    Port 22
+
+# plus any additional slave nodes
+```
+
+```
+# /etc/hosts
+{aws_public_ip}  ld4p_dev_spark_master
+{aws_public_ip}  ld4p_dev_spark_slave1
+# plus any additional slave nodes
+```
+
+Then the usual capistrano workflow can be used, i.e.
+```bash
+bundle install
+bundle exec cap -T
+bundle exec cap ld4p_dev deploy:check
+bundle exec cap ld4p_dev deploy
+bundle exec cap ld4p_dev shell
+```
