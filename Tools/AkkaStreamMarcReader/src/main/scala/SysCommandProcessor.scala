@@ -75,7 +75,9 @@ object SysCommandProcessor extends App {
   )
 
 
-  "ssh -K sirsi@morison.stanford.edu ./catDump.sh /s/SUL/Dataload/Oracle/Package_report/BSTAGE_BIB.BIB121103.MRC.030848.keys".run(processIO)
+  //"ssh -K sirsi@morison.stanford.edu ./catDump.sh /s/SUL/Dataload/Oracle/Package_report/BSTAGE_BIB.BIB121103.MRC.030848.keys".run(processIO)
+
+  s"cat ${dir}/Casalini_mrc_1/8440509.mrc".run(processIO)
 
   StdIn.readLine()
   system.terminate()
