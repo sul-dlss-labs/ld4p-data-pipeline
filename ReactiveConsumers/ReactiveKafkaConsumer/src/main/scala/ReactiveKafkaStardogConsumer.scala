@@ -134,7 +134,7 @@ object ReactiveKafkaStardogConsumer extends App {
       }
 
 
-  val g = BalancerService.balancer(worker, 12)
+  val g = BalancerService.balancer(worker, 16)
 
 
   kafkaSource.async.runWith(g)
