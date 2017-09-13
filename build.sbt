@@ -10,8 +10,8 @@ lazy val commonSettings = Seq (
     "com.github.kxbmap" %% "configs" % "0.4.4",
     "nl.grons" %% "metrics-scala" % "3.5.9_a2.3",
     "org.scalatest" %% "scalatest" % "3.0.1" % Test
-  ),
-  resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
+  )
+  //resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
   // If you want to run with Provided dependency
   // run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
@@ -99,7 +99,8 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     ),
     libraryDependencies ++= Seq("banana", "banana-rdf", "banana-jena").map(banana),
     assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+      case PathList("META-INF", "services", "org.apache.jena.system.JenaSubsystemLifecycle") => MergeStrategy.concat
       case "application.conf" => MergeStrategy.concat
       case "reference.conf"   => MergeStrategy.concat
       case x => MergeStrategy.first
