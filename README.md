@@ -204,3 +204,11 @@ bundle exec cap ld4p_dev deploy:check
 bundle exec cap ld4p_dev deploy
 bundle exec cap ld4p_dev shell
 ```
+
+Once the project is deployed to all the servers, run the assembly task for
+a project, e.g.
+```bash
+bundle exec cap ld4p_dev spark:assembly
+bundle exec cap ld4p_dev stardog:assembly
+```
+

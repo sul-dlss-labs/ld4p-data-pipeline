@@ -1,7 +1,6 @@
 namespace :spark do
 
   after :deploy, 'spark:update_env'
-  after :deploy, 'spark:assembly'
 
   desc 'Update the spark environment variables'
   task :update_env do

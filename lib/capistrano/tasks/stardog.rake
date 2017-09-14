@@ -1,7 +1,6 @@
 namespace :stardog do
 
   after :deploy, 'stardog:update_env'
-  after :deploy, 'stardog:assembly'
 
   desc 'Update the Stardog environment variables'
   task :update_env do
