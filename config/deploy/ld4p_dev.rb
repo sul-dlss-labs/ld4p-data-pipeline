@@ -8,7 +8,7 @@ server 'ld4p_dev_spark_worker2', user: 'root', roles: %w{redhat spark worker}
 server 'ld4p_dev_spark_worker3', user: 'root', roles: %w{redhat spark worker}
 
 # stardog
-server 'ld4p_dev_stardog', user: 'root', roles: %w{redhat stardog triplestore}
+server 'ld4p_dev_stardog', user: 'ubuntu', roles: %w{ubuntu stardog triplestore}
 
 # ----
 # Setup the environment variables

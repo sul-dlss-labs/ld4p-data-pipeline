@@ -19,7 +19,7 @@ namespace :stardog do
   desc 'sbt ReactiveKafkaConsumer/assembly'
   task :assembly do
     on roles(:stardog) do
-      sudo("#{current_path}/lib/bash/redhat/sbt.sh")
+      sudo("#{current_path}/lib/bash/debian/sbt.sh")
       execute("cd #{current_path}; sbt ReactiveKafkaConsumer/assembly")
     end
   end
