@@ -87,7 +87,7 @@ object BalancerService {
 
       Sink.fromGraph(GraphDSL.create() { implicit b =>
 
-      val balancer = b.add(Balance[In](workerCount, waitForAllDownstreams = true))
+      val balancer = b.add(Balance[In](workerCount, waitForAllDownstreams = false))
 
       for (_ <- 1 to workerCount) {
         // for each worker, add an edge from the balancer to the worker, then wire
