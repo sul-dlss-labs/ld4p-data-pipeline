@@ -35,7 +35,7 @@ val toolProjectName        = "Tools"
 lazy val tools             = ld4pProjects(toolProjectName).aggregate(AkkaStreamMarcReader)
 
 val demoProjectName        = "Demos"
-lazy val demos             = ld4pProjects(demoProjectName).aggregate(estimator, estimatorStreaming, marcXMLtoBibFrame, ReactiveFolderCopier, ReactiveFolderReader, singleMetricExample)
+lazy val demos             = ld4pProjects(demoProjectName).aggregate(estimator, estimatorStreaming, marcXMLtoBibFrame, ReactiveFolderCopier, ReactiveFolderReader, singleMetricExample, ReactiveKafkaFsProducer)
 
 /**
   *  The Concrete Projects Applications
@@ -107,7 +107,7 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     mainClass in assembly := Some("ReactiveKafkaStardogConsumer")
   )
 
-lazy val ReactiveKafkaDumpProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
+lazy val ReactiveKafkaFsProducer = ld4pProjects(demoProjectName + "/ReactiveKafkaFsProducer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -117,10 +117,10 @@ lazy val ReactiveKafkaDumpProducer = ld4pProjects(producerProjectName + "/Reacti
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
-    mainClass in assembly := Some("ReactiveKafkaSymphonyProducer")
+    mainClass in assembly := Some("ReactiveKafkaFsProducer")
   )
 
-lazy val ReactiveKafkaUpdateProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
+lazy val ReactiveKafkaDumpProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaDumpProducer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -130,7 +130,20 @@ lazy val ReactiveKafkaUpdateProducer = ld4pProjects(producerProjectName + "/Reac
       "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
       "com.github.pathikrit" %% "better-files" % "2.17.1"
     ),
-    mainClass in assembly := Some("ReactiveKafkaSymphonyProducer")
+    mainClass in assembly := Some("ReactiveKafkaSymphonyDumpProducer")
+  )
+
+lazy val ReactiveKafkaUpdateProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaUpdateProducer")
+  .settings(
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
+      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
+      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
+      "com.github.pathikrit" %% "better-files" % "2.17.1"
+    ),
+    mainClass in assembly := Some("ReactiveKafkaSymphonyUpdateProducer")
   )
 /**
   *  Tools & Demos
