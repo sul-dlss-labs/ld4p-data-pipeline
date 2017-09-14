@@ -31,7 +31,7 @@ val consumersProjectName   = "ReactiveConsumers"
 lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveStardogDumpConsumer)
 
 val producerProjectName    = "ReactiveProducers"
-lazy val reactiveProducers = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaProducer)
+lazy val reactiveProducers = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaDumpProducer, ReactiveKafkaUpdateProducer)
 
 val toolProjectName        = "Tools"
 lazy val tools             = ld4pProjects(toolProjectName).aggregate(AkkaStreamMarcReader)
@@ -110,7 +110,7 @@ lazy val ReactiveStardogDumpConsumer = ld4pProjects(consumersProjectName + "/Rea
     mainClass in assembly := Some("ReactiveStardogDumpConsumer")
   )
 
-lazy val ReactiveKafkaProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
+lazy val ReactiveKafkaDumpProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -123,6 +123,18 @@ lazy val ReactiveKafkaProducer = ld4pProjects(producerProjectName + "/ReactiveKa
     mainClass in assembly := Some("ReactiveKafkaSymphonyProducer")
   )
 
+lazy val ReactiveKafkaUpdateProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")
+  .settings(
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
+      "com.lightbend.akka" %% "akka-stream-alpakka-file" % "0.11",
+      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.4" % Test,
+      "com.github.pathikrit" %% "better-files" % "2.17.1"
+    ),
+    mainClass in assembly := Some("ReactiveKafkaSymphonyProducer")
+  )
 /**
   *  Tools & Demos
   */
