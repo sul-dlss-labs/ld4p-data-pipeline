@@ -26,7 +26,7 @@ val sparkStreamingConvertorsName  = "SparkStreamingConvertors"
 lazy val sparkStreamingConvertors = ld4pProjects(sparkStreamingConvertorsName).aggregate(m21toBibFDumpConvApp, m21toBibFContinousConvApp)
 
 val consumersProjectName   = "ReactiveConsumers"
-lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveKafkaConsumer)
+lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveStardogDumpConsumer)
 
 val producerProjectName    = "ReactiveProducers"
 lazy val reactiveProducers = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaProducer)
@@ -88,7 +88,7 @@ lazy val m21toBibFContinousConvApp = ld4pProjects(sparkStreamingConvertorsName +
 // Simple function to help pick banana dependency. Nothing fency
 val banana = (name: String) => "org.w3" %% name % "0.8.4" excludeAll (ExclusionRule(organization = "org.scala-stm"))
 
-lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveKafkaConsumer")
+lazy val ReactiveStardogDumpConsumer = ld4pProjects(consumersProjectName + "/ReactiveStardogDumpConsumer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -105,7 +105,7 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
       case "reference.conf"   => MergeStrategy.concat
       case x => MergeStrategy.first
     },
-    mainClass in assembly := Some("ReactiveKafkaStardogConsumer")
+    mainClass in assembly := Some("ReactiveStardogDumpConsumer")
   )
 
 lazy val ReactiveKafkaProducer = ld4pProjects(producerProjectName + "/ReactiveKafkaProducer")

@@ -101,9 +101,9 @@ object BalancerService {
 }
 
 
-object ReactiveKafkaStardogConsumer extends App {
+object ReactiveStardogDumpConsumer extends App {
 
-  println("Starting ReactiveKafkaConsumer ...")
+  println("Starting ReactiveStardogDumpConsumer ...")
   implicit val system       = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
   implicit val ec           = system.dispatcher
