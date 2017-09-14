@@ -37,6 +37,8 @@ object ReactiveKafkaSymphonyDumpProducer extends App {
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
     .withBootstrapServers(bootstrapServers)
 
+  println(s"Parallelism is ${producerSettings.parallelism}")
+
   val marcFlow: Flow[ByteString, ByteString, NotUsed] = Framing.delimiter(ByteString(29.asInstanceOf[Char]),
     maximumFrameLength = 10000, allowTruncation = true)
 
