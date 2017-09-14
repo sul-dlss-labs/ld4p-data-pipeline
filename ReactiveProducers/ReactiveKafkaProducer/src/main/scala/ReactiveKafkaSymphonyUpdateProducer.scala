@@ -19,10 +19,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.io.StdIn
 import scala.language.postfixOps
-import scala.sys.process.{ProcessIO, _}
-import scala.util.{Failure, Success}
 
-object ReactiveKafkaUpdateProducer extends App {
+object ReactiveKafkaSymphonyUpdateProducer extends App {
 
   import akka.stream.scaladsl.{Framing, _}
 
@@ -59,25 +57,6 @@ object ReactiveKafkaUpdateProducer extends App {
     }
   }
 
-  val processIO = new ProcessIO(
-    (inOut: java.io.OutputStream) => {},
-
-    (outIn: java.io.InputStream) => {
-
-      val source = StreamConverters.fromInputStream(() => outIn)
-
-      source.async.via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
-        val record = result.message.record
-        println(s"Posted message ${record.value} to kafka ${record.topic} topic")
-        result
-      }.runWith(Sink.ignore)
-    },
-
-    (errIn: java.io.InputStream) => {} /*err*/,
-
-    true
-  )
-
   val fs = FileSystems.getDefault
 
   val exists = Files.exists(fs.getPath(histLogPath))
@@ -90,14 +69,12 @@ object ReactiveKafkaUpdateProducer extends App {
 
     lines.groupedWithin(500, 1 second).flatMapConcat { logLine => Source(logLine.distinct) }
       .map( e =>
-        s"ssh -K sirsi@${symphonyHost} /s/SUL/Bin/LD4P/catDumpUpdate.sh '${e}'".lineStream
-      ).runForeach(println(_))
-
-    /*.via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
-      val record = result.message.record
-      println(s"Posted message ${record.value} to kafka ${record.topic} topic")
-      result
-    }.runWith(Sink.ignore)*/
+        ByteString((s"ssh -K sirsi@${symphonyHost} /s/SUL/Bin/LD4P/catDumpUpdate.sh '${e}'".lineStream)(0))
+      ).via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
+        val record = result.message.record
+        println(s"Posted message ${record.value} to kafka ${record.topic} topic")
+        result
+    }.runWith(Sink.ignore)
   }
   else
     println(s"Hist Log file ${histLogPath} does not exist")
