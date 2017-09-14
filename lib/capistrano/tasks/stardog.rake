@@ -1,10 +1,10 @@
-namespace :spark do
+namespace :stardog do
 
-  after :deploy, 'spark:update_env'
+  after :deploy, 'stardog:update_env'
 
-  desc 'Update the spark environment variables'
+  desc 'Update the Stardog environment variables'
   task :update_env do
-    on roles(:spark) do
+    on roles(:stardog) do
       # remove any existing entries
       sudo("sed -i -e '/BEGIN_LD4P_ENV/,/END_LD4P_ENV/{ d; }' /etc/environment")
       # append new entries
@@ -15,11 +15,11 @@ namespace :spark do
     end
   end
 
-  desc 'sbt SparkStreamingConvertors/assembly'
+  desc 'sbt ReactiveKafkaConsumer/assembly'
   task :assembly do
-    on roles(:spark) do
-      sudo("#{current_path}/lib/bash/redhat/sbt.sh")
-      execute("cd #{current_path}; sbt SparkStreamingConvertors/assembly")
+    on roles(:stardog) do
+      sudo("#{current_path}/lib/bash/debian/sbt.sh")
+      execute("cd #{current_path}; sbt ReactiveKafkaConsumer/assembly")
     end
   end
 
