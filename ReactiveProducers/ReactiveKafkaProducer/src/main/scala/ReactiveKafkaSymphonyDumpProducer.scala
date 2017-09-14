@@ -16,7 +16,7 @@ import scala.language.postfixOps
 import scala.sys.process.{ProcessIO, _}
 import scala.util.{Failure, Success}
 
-object ReactiveKafkaDumpProducer extends App {
+object ReactiveKafkaSymphonyDumpProducer extends App {
 
   import akka.stream.scaladsl.{Framing, _}
 
