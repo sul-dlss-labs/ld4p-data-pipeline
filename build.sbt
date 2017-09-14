@@ -10,8 +10,10 @@ lazy val commonSettings = Seq (
     "com.github.kxbmap" %% "configs" % "0.4.4",
     "nl.grons" %% "metrics-scala" % "3.5.9_a2.3",
     "org.scalatest" %% "scalatest" % "3.0.1" % Test
-  )
-  //resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
+  ),
+  //add the bblfish-snapshots repository to the resolvers
+  resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
+
   // If you want to run with Provided dependency
   // run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
