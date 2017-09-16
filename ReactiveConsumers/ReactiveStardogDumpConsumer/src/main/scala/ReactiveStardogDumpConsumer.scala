@@ -67,7 +67,7 @@ trait SparqlOpertions extends SPARQLExampleDependencies { self =>
       graph.foreach(turtleWriter.write(_, to, ""))
     }
 
-    val endpoint = new URL("http://localhost:5820/CasaliniDB/update")
+    val endpoint = new URL("http://localhost/CasaliniDB/update")
     val query    = parseUpdate(s"""INSERT DATA {${to.toString}}""".stripMargin).get
     val res      = endpoint.executeUpdate(query)
 
@@ -87,7 +87,7 @@ object BalancerService {
 
       Sink.fromGraph(GraphDSL.create() { implicit b =>
 
-      val balancer = b.add(Balance[In](workerCount, waitForAllDownstreams = true))
+      val balancer = b.add(Balance[In](workerCount, waitForAllDownstreams = false))
 
       for (_ <- 1 to workerCount) {
         // for each worker, add an edge from the balancer to the worker, then wire
@@ -101,9 +101,9 @@ object BalancerService {
 }
 
 
-object ReactiveKafkaStardogConsumer extends App {
+object ReactiveStardogDumpConsumer extends App {
 
-  println("Starting ReactiveKafkaConsumer ...")
+  println("Starting ReactiveStardogDumpConsumer ...")
   implicit val system       = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
   implicit val ec           = system.dispatcher
@@ -134,7 +134,7 @@ object ReactiveKafkaStardogConsumer extends App {
       }
 
 
-  val g = BalancerService.balancer(worker, 12)
+  val g = BalancerService.balancer(worker, 8)
 
 
   kafkaSource.async.runWith(g)

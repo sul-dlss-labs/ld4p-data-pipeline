@@ -172,28 +172,28 @@ Provision AWS systems, e.g. use
 Once the AWS systems are available, setup `~/.ssh/config` and `/etc/hosts`, e.g.
 
 ```
+# /etc/hosts
+{aws_public_ip}  ld4p_dev_spark_master
+{aws_public_ip}  ld4p_dev_spark_worker1
+# plus any additional worker nodes
+```
+
+```
 # ~/.ssh/config
 
 Host ld4p_dev_spark_master
-    User root
-    Hostname {aws_public_dns}
-    IdentityFile ~/.ssh/{key}.pem
+    User {aws_user}
+    Hostname {use /etc/hosts name}
+    IdentityFile ~/.ssh/{key-pair}.pem
     Port 22
 
-Host ld4p_dev_spark_slave1
-    User root
-    Hostname {aws_public_dns}    
-    IdentityFile ~/.ssh/{key}.pem    
+Host ld4p_dev_spark_worker1
+    User {aws_user}
+    Hostname {use /etc/hosts name}
+    IdentityFile ~/.ssh/{key-pair}.pem    
     Port 22
 
-# plus any additional slave nodes
-```
-
-```
-# /etc/hosts
-{aws_public_ip}  ld4p_dev_spark_master
-{aws_public_ip}  ld4p_dev_spark_slave1
-# plus any additional slave nodes
+# plus any additional worker nodes
 ```
 
 Then the usual capistrano workflow can be used, i.e.
@@ -204,3 +204,11 @@ bundle exec cap ld4p_dev deploy:check
 bundle exec cap ld4p_dev deploy
 bundle exec cap ld4p_dev shell
 ```
+
+Once the project is deployed to all the servers, run the assembly task for
+a project, e.g.
+```bash
+bundle exec cap ld4p_dev spark:assembly
+bundle exec cap ld4p_dev stardog:assembly
+```
+

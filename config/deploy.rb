@@ -2,10 +2,17 @@ set :application, "ld4p-data-pipeline"
 set :repo_url, "https://github.com/sul-dlss/ld4p-data-pipeline.git"
 
 # Default branch is :master
-# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, "/opt/ld4p-data-pipeline"
+
+before 'deploy:check:directories', 'deploy:mkdir_deploy_to' do
+  on roles(:all) do
+    execute("[ -d #{fetch(:deploy_to)} ] || sudo mkdir -p #{fetch(:deploy_to)}")
+    execute("sudo chmod a+w #{fetch(:deploy_to)}")
+  end
+end
 
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
@@ -30,4 +37,4 @@ set :deploy_to, "/opt/ld4p-data-pipeline"
 # set :local_user, -> { `git config user.name`.chomp }
 
 # Default value for keep_releases is 5
-# set :keep_releases, 5
+set :keep_releases, 1

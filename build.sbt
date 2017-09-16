@@ -11,7 +11,9 @@ lazy val commonSettings = Seq (
     "nl.grons" %% "metrics-scala" % "3.5.9_a2.3",
     "org.scalatest" %% "scalatest" % "3.0.1" % Test
   ),
+  //add the bblfish-snapshots repository to the resolvers
   resolvers += "bblfish-snapshots" at "http://bblfish.net/work/repo/releases"
+
   // If you want to run with Provided dependency
   // run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated
 )
@@ -26,7 +28,7 @@ val sparkStreamingConvertorsName  = "SparkStreamingConvertors"
 lazy val sparkStreamingConvertors = ld4pProjects(sparkStreamingConvertorsName).aggregate(m21toBibFDumpConvApp, m21toBibFContinousConvApp)
 
 val consumersProjectName   = "ReactiveConsumers"
-lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveKafkaConsumer)
+lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveStardogDumpConsumer, ReactiveStardogUpdateConsumer)
 
 val producerProjectName    = "ReactiveProducers"
 lazy val reactiveProducers = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaDumpProducer, ReactiveKafkaUpdateProducer)
@@ -88,7 +90,7 @@ lazy val m21toBibFContinousConvApp = ld4pProjects(sparkStreamingConvertorsName +
 // Simple function to help pick banana dependency. Nothing fency
 val banana = (name: String) => "org.w3" %% name % "0.8.4" excludeAll (ExclusionRule(organization = "org.scala-stm"))
 
-lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveKafkaConsumer")
+lazy val ReactiveStardogDumpConsumer = ld4pProjects(consumersProjectName + "/ReactiveStardogDumpConsumer")
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
@@ -99,12 +101,33 @@ lazy val ReactiveKafkaConsumer = ld4pProjects(consumersProjectName + "/ReactiveK
     ),
     libraryDependencies ++= Seq("banana", "banana-rdf", "banana-jena").map(banana),
     assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+      case PathList("META-INF", "services", "org.apache.jena.system.JenaSubsystemLifecycle") => MergeStrategy.concat
       case "application.conf" => MergeStrategy.concat
       case "reference.conf"   => MergeStrategy.concat
       case x => MergeStrategy.first
     },
-    mainClass in assembly := Some("ReactiveKafkaStardogConsumer")
+    mainClass in assembly := Some("ReactiveStardogDumpConsumer")
+  )
+
+lazy val ReactiveStardogUpdateConsumer = ld4pProjects(consumersProjectName + "/ReactiveStardogUpdateConsumer")
+  .settings(
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
+      "com.github.pathikrit" %% "better-files" % "2.17.1",
+      "org.marc4j" % "marc4j" % "2.8.2"
+    ),
+    libraryDependencies ++= Seq("banana", "banana-rdf", "banana-jena").map(banana),
+    assemblyMergeStrategy in assembly := {
+      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+      case PathList("META-INF", "services", "org.apache.jena.system.JenaSubsystemLifecycle") => MergeStrategy.concat
+      case "application.conf" => MergeStrategy.concat
+      case "reference.conf"   => MergeStrategy.concat
+      case x => MergeStrategy.first
+    },
+    mainClass in assembly := Some("ReactiveStardogUpdateConsumer")
   )
 
 lazy val ReactiveKafkaFsProducer = ld4pProjects(demoProjectName + "/ReactiveKafkaFsProducer")

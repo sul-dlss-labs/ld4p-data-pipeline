@@ -161,7 +161,7 @@ object M21toBibFDumpConvApp {
 
     val topic = "bibframe"
     val producerConfig = Map(
-      "bootstrap.servers" -> "localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092, 127.0.0.1:9092",
+      "bootstrap.servers" -> bootstrapServers,
       "key.serializer" -> classOf[StringSerializer].getName,
       "value.serializer" -> classOf[StringSerializer].getName
     )

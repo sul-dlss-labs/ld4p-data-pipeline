@@ -4,9 +4,7 @@ import org.apache.jena.query.Dataset
 import org.w3.banana._
 import org.w3.banana.jena.io._
 import org.w3.banana.io._
-import scala.concurrent.Future
 import scala.util.Try
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait JenaModuleExtended
   extends RDFModule
