@@ -17,8 +17,7 @@ import scala.util.{Failure, Success}
 import configs.syntax._
 
 object ReactiveKafkaFsProducer extends App {
-
-  println("Starting ReactiveKafkaWriter ....")
+  println(s"Starting ${getClass.getName} ...")
 
   implicit val system       = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
@@ -26,26 +25,24 @@ object ReactiveKafkaFsProducer extends App {
   val MAX_ALLOWED_FILES     = 1000
   val config                = ConfigFactory.load()
   val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
-  val inDir                 = File(s"${dir}/Casalini_mrc")
+  val path                  = File(s"${dir}/Casalini_mrc").path.toString
 
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
     .withBootstrapServers("localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092, 127.0.0.1:9092")
 
-  val path                          = inDir.path.toString
-  val fs                            = FileSystems.getDefault
-  val source: Source[Path, NotUsed] = Directory.ls(fs.getPath(path))
+  val source: Source[Path, NotUsed] = Directory.ls(FileSystems.getDefault.getPath(path))
 
-  val readflow  = Flow[Path].mapAsyncUnordered(16){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
+  val readflow  = Flow[Path].mapAsyncUnordered(16) { e => Future { (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
 
   val writeflow = Flow[(String, Array[Byte])].mapAsyncUnordered(16) { elem =>
-      Future {new ProducerRecord[String, Array[Byte]]("marc21", elem._1, elem._2)}
+      Future { new ProducerRecord[String, Array[Byte]]("marc21", elem._1, elem._2) }
     }
 
   val done = source.async.via(readflow).async.via(writeflow).runWith(Producer.plainSink(producerSettings))
 
   done.onComplete {
     case Success(e) => println("file copied with success"); system.terminate()
-    case Failure(e) => println("process ended with failure"); system.terminate()
+    case Failure(e) => println(s"process ended with failure: ${e.getMessage}"); system.terminate()
   }
 
 }
