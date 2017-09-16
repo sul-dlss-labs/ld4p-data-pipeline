@@ -1,9 +1,9 @@
 package org.w3.banana.jena
-
 import org.apache.jena.query.Dataset
 import org.w3.banana._
-import org.w3.banana.jena.io._
 import org.w3.banana.io._
+import org.w3.banana.jena.io._
+
 import scala.util.Try
 
 trait JenaModuleExtended
