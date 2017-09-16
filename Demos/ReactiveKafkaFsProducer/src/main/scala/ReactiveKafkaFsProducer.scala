@@ -27,8 +27,10 @@ object ReactiveKafkaFsProducer extends App {
   val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
   val path                  = File(s"${dir}/Casalini_mrc").path.toString
 
+  val bootstrapServers = config.getOrElse("bootstrapServers", "").toOption.fold("")(identity(_))
+
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
-    .withBootstrapServers("localhost:9092, 192.168.0.101:9092, Maatari-Stanford.local:9092, 127.0.0.1:9092")
+    .withBootstrapServers(bootstrapServers)
 
   val source: Source[Path, NotUsed] = Directory.ls(FileSystems.getDefault.getPath(path))
 
