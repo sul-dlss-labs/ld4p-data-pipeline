@@ -10,7 +10,6 @@ import akka.kafka.{ProducerMessage, ProducerSettings}
 import akka.stream.alpakka.file.scaladsl.FileTailSource
 import akka.stream.{ActorMaterializer, scaladsl}
 import akka.util.ByteString
-import com.sun.xml.internal.bind.v2.TODO
 import com.typesafe.config.ConfigFactory
 import configs.syntax._
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -68,6 +67,7 @@ object ReactiveKafkaSymphonyUpdateProducer extends App {
   val exists = Files.exists(fs.getPath(histLogPath))
 
   if (exists) {
+
     val lines: Source[String, NotUsed] = FileTailSource.lines(
       fs.getPath(histLogPath), maxLineSize = 8192, pollingInterval = 250.millis
     )
@@ -88,6 +88,11 @@ object ReactiveKafkaSymphonyUpdateProducer extends App {
       val record = result.message.record
       println(s"Posted message ${record.value} to kafka ${record.topic} topic")
       result
+        Future{ByteString((s"ssh -K sirsi@${symphonyHost} /s/SUL/Bin/LD4P/catDumpUpdate.sh '${e}'".lineStream)(0))}
+      ).via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
+        val record = result.message.record
+        println(s"Posted message ${record.value} to kafka ${record.topic} topic")
+        result
     }.runWith(Sink.ignore)
   }
   else

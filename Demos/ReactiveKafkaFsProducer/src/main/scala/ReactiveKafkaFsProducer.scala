@@ -18,7 +18,7 @@ import configs.syntax._
 
 object ReactiveKafkaFsProducer extends App {
 
-  println("Starting ReactiveKafkaWriter ....")
+  println(s"Starting ${getClass.getName} ...")
 
   implicit val system       = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
@@ -26,7 +26,8 @@ object ReactiveKafkaFsProducer extends App {
   val MAX_ALLOWED_FILES     = 1000
   val config                = ConfigFactory.load()
   val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
-  val inDir                 = File(s"${dir}/Casalini_mrc")
+
+  val path                  = File(s"${dir}/Casalini_mrc").path.toString
 
   val bootstrapServers = config.getOrElse("bootstrapServers", "").toOption.fold("")(identity(_))
 
@@ -47,7 +48,7 @@ object ReactiveKafkaFsProducer extends App {
 
   done.onComplete {
     case Success(e) => println("file copied with success"); system.terminate()
-    case Failure(e) => println("process ended with failure"); system.terminate()
+    case Failure(e) => println(s"process ended with failure: ${e.getMessage}"); system.terminate()
   }
 
 }
