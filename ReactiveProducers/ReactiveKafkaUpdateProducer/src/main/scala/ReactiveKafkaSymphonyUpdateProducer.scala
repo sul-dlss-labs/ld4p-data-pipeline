@@ -76,14 +76,14 @@ object ReactiveKafkaSymphonyUpdateProducer extends App {
       .mapAsync(1)( e =>
         Future{
           val res = (s"/s/SUL/Bin/LD4P/catDumpUpdate.sh ${e}".!!)
-          res
+          ByteString(res)
         }
-      ).runForeach(s =>println(s"Result: ${s.toString()}"))
-    /*.via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
+      )/*.runForeach(s =>println(s"Result: ${s.toString()}"))*/
+    .via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
         val record = result.message.record
         println(s"Posted message ${record.value} to kafka ${record.topic} topic")
         result
-    }.runWith(Sink.ignore)*/
+    }.runWith(Sink.ignore)
   }
   else
     println(s"Hist Log file ${histLogPath} does not exist")
