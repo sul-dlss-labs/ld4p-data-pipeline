@@ -41,6 +41,8 @@ object ReactiveKafkaSymphonyUpdateProducer extends App {
 
   val histLogPath = s"${symphonyHistLog}/${year}${month}${day}.hist"
 
+  val local = if (args.size == 0) None else Some(args(0))
+
   println(s"Using bootstrap servers: ${bootstrapServers}")
   println(s"Fetching records from: ${histLogPath}")
   println(s"Dumping records from ${symphonyHost}")

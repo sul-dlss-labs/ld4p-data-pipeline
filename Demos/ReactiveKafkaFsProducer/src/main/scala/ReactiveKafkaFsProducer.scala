@@ -17,6 +17,7 @@ import scala.util.{Failure, Success}
 import configs.syntax._
 
 object ReactiveKafkaFsProducer extends App {
+
   println(s"Starting ${getClass.getName} ...")
 
   implicit val system       = ActorSystem("QuickStart")
@@ -25,19 +26,20 @@ object ReactiveKafkaFsProducer extends App {
   val MAX_ALLOWED_FILES     = 1000
   val config                = ConfigFactory.load()
   val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
+
   val path                  = File(s"${dir}/Casalini_mrc").path.toString
 
   val bootstrapServers = config.getOrElse("bootstrapServers", "").toOption.fold("")(identity(_))
 
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
     .withBootstrapServers(bootstrapServers)
-
+  
   val source: Source[Path, NotUsed] = Directory.ls(FileSystems.getDefault.getPath(path))
 
-  val readflow  = Flow[Path].mapAsyncUnordered(16) { e => Future { (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
+  val readflow  = Flow[Path].mapAsyncUnordered(16){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
 
   val writeflow = Flow[(String, Array[Byte])].mapAsyncUnordered(16) { elem =>
-      Future { new ProducerRecord[String, Array[Byte]]("marc21", elem._1, elem._2) }
+      Future {new ProducerRecord[String, Array[Byte]]("marc21", elem._1, elem._2)}
     }
 
   val done = source.async.via(readflow).async.via(writeflow).runWith(Producer.plainSink(producerSettings))
