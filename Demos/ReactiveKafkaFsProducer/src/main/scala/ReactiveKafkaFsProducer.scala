@@ -33,9 +33,8 @@ object ReactiveKafkaFsProducer extends App {
 
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
     .withBootstrapServers(bootstrapServers)
-
-  val fs                            = FileSystems.getDefault
-  val source: Source[Path, NotUsed] = Directory.ls(fs.getPath(path))
+  
+  val source: Source[Path, NotUsed] = Directory.ls(FileSystems.getDefault.getPath(path))
 
   val readflow  = Flow[Path].mapAsyncUnordered(16){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
 
