@@ -75,20 +75,17 @@ object ReactiveKafkaSymphonyUpdateProducer extends App {
     lines.map {logline =>
       logline.split('^').filter{e => e.startsWith("IQ") || e.startsWith("NQ")}(0)
     }.groupedWithin(500, 1 second).flatMapConcat { datacode => Source(datacode.distinct) }
-      .mapAsync(4)( e =>
-        local match {
-          case None => {
-            Future{ByteString((s"ssh -K sirsi@${symphonyHost} /s/SUL/Bin/LD4P/catDumpUpdate.sh '${e}'".lineStream)(0))}
-          }
-          case Some(symphony) => {
-            Future{ByteString((s"/s/SUL/Bin/LD4P/catDumpUpdate.sh '${e}'".lineStream)(0))}
-          }
+      .mapAsync(1)( e =>
+        Future{
+          val res = (s"/s/SUL/Bin/LD4P/catDumpUpdate.sh ${e}".!!)
+          res
         }
-      ).via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
-      val record = result.message.record
-      println(s"Posted message ${record.value} to kafka ${record.topic} topic")
-      result
-    }.runWith(Sink.ignore)
+      ).runForeach(s =>println(s"Result: ${s.toString()}"))
+    /*.via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
+        val record = result.message.record
+        println(s"Posted message ${record.value} to kafka ${record.topic} topic")
+        result
+    }.runWith(Sink.ignore)*/
   }
   else
     println(s"Hist Log file ${histLogPath} does not exist")
