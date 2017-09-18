@@ -48,29 +48,59 @@ trait SparqlOpertions extends SPARQLExampleDependencies { self =>
   import sparqlHttp.sparqlEngineSyntax._
   import sparqlHttp.sparqlUpdateSyntax._
 
+
+  def getURIForInstances(graphs: Try[PointedGraphs[Rdf]]) = {
+
+    val tryworknodes = graphs.map(work => work.nodes)
+
+    val uris = tryworknodes.map(_.map{ node =>
+      ops.foldNode(node) (
+        { case URI (uri) => uri },
+        {case BNode(bnode) => ""},
+        {case Literal(l) => ""}
+      )
+    })
+    uris.map{_.foldLeft(List[String]()) ((b:List[String], s:String) =>b.+:(s))}
+  }
+
+  def getDeleteStatement(instances: Try[List[String]]): Try[List[String]] = {
+    instances.map { list =>
+        list.map { e =>
+          s"""  ?s ?p0  <${e}> .
+              <${e}> ?p1 ?o
+           """.stripMargin
+        }
+      }
+  }
+
+
   def executeUpdateQuery(data: Seq[String]): Unit = {
-
-    val to = new ByteArrayOutputStream
-
     println(s"got ${data.size} record to send")
 
+    //Writing the update
+    val to = new ByteArrayOutputStream
     data.foreach { elt =>
-
       val graph = rdfXMLReader.read(new ByteArrayInputStream(elt.getBytes(StandardCharsets.UTF_8)), "")
-
-
       graph match {
         case Success(e) => () //println("The read was a success apparently")
-        case Failure(e) => println(s"The Failure is big: ${e}")
+        case Failure(e) => println(s"Could not read the RDF/XML received: ${e}")
       }
+
+      //========== Not Good
+      val workuri       = getURIForInstances(graph.map{ g => g.getAllInstancesOf(URI("http://id.loc.gov/ontologies/bibframe/Work"))})
+
+      val instanceURI   = getURIForInstances(graph.map{ g => g.getAllInstancesOf(URI("http://id.loc.gov/ontologies/bibframe/Instance"))})
+
+
+      getDeleteStatement(workuri).foreach(_.foreach(println(_)))
+      getDeleteStatement(instanceURI).foreach(_.foreach(println(_)))
+
 
       graph.foreach(turtleWriter.write(_, to, ""))
     }
-
-    val endpoint = new URL("http://localhost/CasaliniDB/update")
+    val endpoint = new URL("http://localhost:5820/CasaliniDB/update")
     val query    = parseUpdate(s"""INSERT DATA {${to.toString}}""".stripMargin).get
     val res      = endpoint.executeUpdate(query)
-
     res match {
       case Success(e) => ()
       case Failure(e) => println(s"It failed with: ${e.toString}")
@@ -101,7 +131,7 @@ object BalancerService {
 }
 
 
-object ReactiveStardogDumpConsumer extends App {
+object ReactiveStardogUpdateConsumer extends App {
 
   println("Starting ReactiveStardogDumpConsumer ...")
   implicit val system       = ActorSystem("QuickStart")
@@ -128,13 +158,13 @@ object ReactiveStardogDumpConsumer extends App {
 
   val kafkaSource = Consumer.plainSource(consumerSettings, subscription).map(e => e.value())
 
-  val worker = Flow[String].groupedWithin(stardogBatchSize, 20 second)
+  val worker = Flow[String].groupedWithin(/*stardogBatchSize*/1, 20 second)
       .mapAsyncUnordered(1){ e =>
         Future {SparlOperationsWithJena.executeUpdateQuery(e)}
       }
 
 
-  val g = BalancerService.balancer(worker, 8)
+  val g = BalancerService.balancer(worker, 1)
 
 
   kafkaSource.async.runWith(g)

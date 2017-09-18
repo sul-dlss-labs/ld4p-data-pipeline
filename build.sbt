@@ -28,7 +28,7 @@ val sparkStreamingConvertorsName  = "SparkStreamingConvertors"
 lazy val sparkStreamingConvertors = ld4pProjects(sparkStreamingConvertorsName).aggregate(m21toBibFDumpConvApp, m21toBibFContinousConvApp)
 
 val consumersProjectName   = "ReactiveConsumers"
-lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveStardogDumpConsumer)
+lazy val reactiveConsumers = ld4pProjects(consumersProjectName).aggregate(ReactiveStardogDumpConsumer, ReactiveStardogUpdateConsumer)
 
 val producerProjectName    = "ReactiveProducers"
 lazy val reactiveProducers = ld4pProjects(producerProjectName).aggregate(ReactiveKafkaDumpProducer, ReactiveKafkaUpdateProducer)
@@ -108,6 +108,26 @@ lazy val ReactiveStardogDumpConsumer = ld4pProjects(consumersProjectName + "/Rea
       case x => MergeStrategy.first
     },
     mainClass in assembly := Some("ReactiveStardogDumpConsumer")
+  )
+
+lazy val ReactiveStardogUpdateConsumer = ld4pProjects(consumersProjectName + "/ReactiveStardogUpdateConsumer")
+  .settings(
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-stream" % "2.5.4",
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
+      "com.github.pathikrit" %% "better-files" % "2.17.1",
+      "org.marc4j" % "marc4j" % "2.8.2"
+    ),
+    libraryDependencies ++= Seq("banana", "banana-rdf", "banana-jena").map(banana),
+    assemblyMergeStrategy in assembly := {
+      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+      case PathList("META-INF", "services", "org.apache.jena.system.JenaSubsystemLifecycle") => MergeStrategy.concat
+      case "application.conf" => MergeStrategy.concat
+      case "reference.conf"   => MergeStrategy.concat
+      case x => MergeStrategy.first
+    },
+    mainClass in assembly := Some("ReactiveStardogUpdateConsumer")
   )
 
 lazy val ReactiveKafkaFsProducer = ld4pProjects(demoProjectName + "/ReactiveKafkaFsProducer")
