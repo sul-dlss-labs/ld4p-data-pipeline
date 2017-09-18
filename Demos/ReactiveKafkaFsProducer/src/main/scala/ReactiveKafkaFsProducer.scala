@@ -34,7 +34,6 @@ object ReactiveKafkaFsProducer extends App {
   val producerSettings = ProducerSettings(system, new StringSerializer, new ByteArraySerializer)
     .withBootstrapServers(bootstrapServers)
 
-  val path                          = inDir.toString
   val fs                            = FileSystems.getDefault
   val source: Source[Path, NotUsed] = Directory.ls(fs.getPath(path))
 

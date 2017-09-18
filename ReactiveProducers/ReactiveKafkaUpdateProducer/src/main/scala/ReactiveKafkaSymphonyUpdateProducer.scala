@@ -88,11 +88,6 @@ object ReactiveKafkaSymphonyUpdateProducer extends App {
       val record = result.message.record
       println(s"Posted message ${record.value} to kafka ${record.topic} topic")
       result
-        Future{ByteString((s"ssh -K sirsi@${symphonyHost} /s/SUL/Bin/LD4P/catDumpUpdate.sh '${e}'".lineStream)(0))}
-      ).via(marcFlow).async.via(recordFlow).via(Producer.flow(producerSettings)).map { result =>
-        val record = result.message.record
-        println(s"Posted message ${record.value} to kafka ${record.topic} topic")
-        result
     }.runWith(Sink.ignore)
   }
   else
