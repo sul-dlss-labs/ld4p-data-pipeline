@@ -4,6 +4,8 @@
 
 Project Management : https://ld-stanford.myjetbrains.com/youtrack/
 
+Check [Wiki Pages](https://github.com/sul-dlss/ld4p-data-pipeline/wiki) for a comprehensive introduction to the project
+
 ## Requirements
 
 (This is in progress)
