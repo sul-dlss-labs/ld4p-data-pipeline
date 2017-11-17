@@ -21,11 +21,10 @@ object ReactiveFolderCopier extends App {
   implicit val materializer = ActorMaterializer()
   implicit val ec           = system.dispatcher
 
-  val MAX_ALLOWED_FILES     = Int.MaxValue
   val config                = ConfigFactory.load()
   val dir                   = config.getOrElse("dataDir", "").toOption.fold("")(identity(_))
   val inDir                 = File(s"${dir}/Casalini_mrc")
-  val outDir                = File(s"${dir}/Casalini_mrc_${MAX_ALLOWED_FILES}")
+  val outDir                = File(s"${dir}/Casalini_mrc_copied")
 
 
 
@@ -39,8 +38,9 @@ object ReactiveFolderCopier extends App {
 
   val source: Source[Path, NotUsed] = Directory.ls(inDir.path)
 
-  val readflow  = Flow[Path].mapAsyncUnordered(16){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
-  val writeflow = Flow[(String, Array[Byte])].mapAsyncUnordered(16) { copy =>
+
+  val readflow  = Flow[Path].mapAsyncUnordered(8){ e => Future{ (e.getFileName.toString, File(e.toAbsolutePath).byteArray) } }
+  val writeflow = Flow[(String, Array[Byte])].mapAsyncUnordered(8) { copy =>
     Future {
      tryDir.flatMap{ dir => Try {dir.createChild(copy._1)}}.foreach { file =>
        file.writeByteArray(copy._2)
@@ -50,16 +50,21 @@ object ReactiveFolderCopier extends App {
 
 
   /*val readflow  = Flow[Path].map{e => (e.getFileName.toString, File(e.toAbsolutePath).byteArray)}
+
   val writeflow = Flow[(String, Array[Byte])].map { copy =>
       tryDir.flatMap{ dir => Try {dir.createChild(copy._1)}}.foreach { file =>
         file.writeByteArray(copy._2)
       }
-  }*/
-
+  }
+*/
 
   val starttime = System.currentTimeMillis()
 
-  val done = source.async.via(readflow).async.via(writeflow).runWith(Sink.ignore)
+
+  //val done      = source.via(readflow).via(writeflow).runWith(Sink.ignore)
+
+
+  val done      = source.async.via(readflow).async.via(writeflow).runWith(Sink.ignore)
 
   done.onComplete {
     case Success(e) => println(s"Task succeedIn: ${System.currentTimeMillis() - starttime}")
